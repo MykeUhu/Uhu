@@ -128,12 +128,6 @@ void AUhuCharacterBase::OnRep_Burned()
 {
 }
 
-void AUhuCharacterBase::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
 FVector AUhuCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
 	const FUhuGameplayTags& GameplayTags = FUhuGameplayTags::Get();
@@ -273,3 +267,6 @@ void AUhuCharacterBase::Dissolve()
 		StartWeaponDissolveTimeline(DynamicMatInst);
 	}
 }
+
+
+

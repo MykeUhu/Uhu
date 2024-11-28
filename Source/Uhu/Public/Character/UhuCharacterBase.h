@@ -78,8 +78,6 @@ public:
 	virtual void OnRep_Burned();
 	
 protected:
-	virtual void BeginPlay() override;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
@@ -160,7 +158,6 @@ protected:
 	TObjectPtr<UDebuffNiagaraComponent> StunDebuffComponent;
 	
 private:
-
 	UPROPERTY(EditAnywhere, Category = "Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 
