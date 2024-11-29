@@ -237,6 +237,11 @@ void FUhuGameplayTags::InitializeNativeGameplayTags()
 		FString("Input Tag for Right Mouse Button")
 		);
 
+	GameplayTags.InputTag_Shift = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.Shift"),
+		FString("Input Tag for Shift key")
+		);
+	
 	GameplayTags.InputTag_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.1"),
 		FString("Input Tag for 1 key")

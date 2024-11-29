@@ -18,50 +18,42 @@
 
 AUhuCharacter::AUhuCharacter()
 {
-    // Set this character to call Tick() every frame
     PrimaryActorTick.bCanEverTick = true;
 
-    // Camera boom setup
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>("CameraBoom");
     CameraBoom->SetupAttachment(GetRootComponent());
     CameraBoom->TargetArmLength = 300.0f;
     CameraBoom->bUsePawnControlRotation = true;
 
-    // Follow camera setup
     FollowCameraComponent = CreateDefaultSubobject<UCameraComponent>("FollowCameraComponent");
     FollowCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
     FollowCameraComponent->bUsePawnControlRotation = false;
 
-    // AFK Camera setup
     AFKCameraComponent = CreateDefaultSubobject<UCineCameraComponent>("AFKCameraComponent");
     AFKCameraComponent->SetupAttachment(GetRootComponent());
     AFKCameraComponent->SetActive(false);
 
-    // Level-up effect setup
     LevelUpNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("LevelUpNiagaraComponent");
     LevelUpNiagaraComponent->SetupAttachment(GetRootComponent());
     LevelUpNiagaraComponent->bAutoActivate = false;
 
-    // Character movement setup
     GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0.f, 540.f, 0.f);
     GetCharacterMovement()->bConstrainToPlane = true;
     GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
-    // Controller rotation setup
     bUseControllerRotationPitch = false;
     bUseControllerRotationRoll = false;
     bUseControllerRotationYaw = false;
-
-    // Character class setup
+    
+    BaseWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+    
     CharacterClass = ECharacterClass::Elementalist;
 }
 
 void AUhuCharacter::PossessedBy(AController* NewController)
 {
     Super::PossessedBy(NewController);
-
-    // Init ability actor info for the Server
     InitAbilityActorInfo();
     AddCharacterAbilities();
 }
@@ -69,8 +61,6 @@ void AUhuCharacter::PossessedBy(AController* NewController)
 void AUhuCharacter::OnRep_PlayerState()
 {
     Super::OnRep_PlayerState();
-
-    // Init ability actor info for the Client
     InitAbilityActorInfo();
 }
 
@@ -83,7 +73,6 @@ void AUhuCharacter::Tick(float DeltaSeconds)
         float MouseX, MouseY;
         PC->GetInputMouseDelta(MouseX, MouseY);
 
-        // Reset AFK timer on mouse movement
         if (MouseX != 0.0f || MouseY != 0.0f)
         {
             PC->ResetAFKTimer();
@@ -98,6 +87,47 @@ void AUhuCharacter::BeginPlay()
     if (AUhuPlayerController* PC = Cast<AUhuPlayerController>(GetController()))
     {
         PC->OnAFKStatusChanged.AddDynamic(this, &AUhuCharacter::HandleAFKStatusChange);
+    }
+}
+
+void AUhuCharacter::SetSprinting(bool bNewSprinting)
+{
+    if (bIsSprinting != bNewSprinting)
+    {
+        bIsSprinting = bNewSprinting;
+        
+        if (bIsSprinting)
+        {
+            ApplySprintEffect();
+        }
+        else
+        {
+            RemoveSprintEffect();
+        }
+    }
+}
+
+void AUhuCharacter::ApplySprintEffect()
+{
+    if (GetAbilitySystemComponent() && SprintEffect)
+    {
+        FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+        ContextHandle.AddSourceObject(this);
+
+        FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(SprintEffect, 1, ContextHandle);
+        if (SpecHandle.IsValid())
+        {
+            SprintEffectHandle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+        }
+    }
+}
+
+void AUhuCharacter::RemoveSprintEffect()
+{
+    if (GetAbilitySystemComponent() && SprintEffectHandle.IsValid())
+    {
+        GetAbilitySystemComponent()->RemoveActiveGameplayEffect(SprintEffectHandle);
+        SprintEffectHandle.Invalidate();
     }
 }
 
@@ -257,11 +287,9 @@ void AUhuCharacter::HandleAFKStatusChange(bool bIsAFK)
 {
     if (bIsAFK)
     {
-        // Switch to cinematic camera
         FollowCameraComponent->SetActive(false);
         AFKCameraComponent->SetActive(true);
         
-        // Disable player input
         if (AUhuPlayerController* PC = Cast<AUhuPlayerController>(GetController()))
         {
             PC->SetIgnoreLookInput(true);
@@ -270,11 +298,9 @@ void AUhuCharacter::HandleAFKStatusChange(bool bIsAFK)
     }
     else
     {
-        // Switch back to gameplay camera
         AFKCameraComponent->SetActive(false);
         FollowCameraComponent->SetActive(true);
         
-        // Re-enable player input
         if (AUhuPlayerController* PC = Cast<AUhuPlayerController>(GetController()))
         {
             PC->SetIgnoreLookInput(false);
@@ -303,5 +329,4 @@ void AUhuCharacter::InitAbilityActorInfo()
     }
     InitializeDefaultAttributes();
 }
-
 

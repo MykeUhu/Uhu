@@ -18,10 +18,14 @@
 
 ---
 
-### Spieler - Look - Mouse Y Invertieren
+### Spieler - Look - Mouse Y Invertieren      
 
 Spieler selber entscheiden lassen ober Maus invertiert ist  
 Variable definiert aber in Menue setzbar machen
+---
+
+### Wenn Character beim laufen Zappt
+Animation - Root Motion rausnehmen und Force Root lock aktivieren
 
 ---
 

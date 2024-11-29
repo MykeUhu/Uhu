@@ -21,7 +21,7 @@ class AMagicCircle;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAFKStatusChanged, bool, bIsAFK);
 
 /**
- * AUhuPlayerController handles player input and AFK functionality.
+ * AUhuPlayerController handles player input, AFK functionality, and ability activation.
  */
 UCLASS()
 class UHU_API AUhuPlayerController : public APlayerController
@@ -91,13 +91,11 @@ private:
     TObjectPtr<UInputAction> ShiftAction;
 
     // Input handling functions
-    void ShiftPressed() { bShiftKeyDown = true; };
-    void ShiftReleased() { bShiftKeyDown = false; };
-    bool bShiftKeyDown = false;
-
     void Move(const FInputActionValue& InputActionValue);
     void Look(const FInputActionValue& LookActionValue);
-
+    void ShiftPressed();
+    void ShiftReleased();
+    
     // Cursor tracing
     void CursorTrace();
     IEnemyInterface* LastActor;
@@ -122,7 +120,6 @@ private:
     float FollowTime = 0.f;
     float ShortPressThreshold = 0.5f;
     bool bAutoRunning = false;
-    bool bTargeting = false;
 
     UPROPERTY(EditDefaultsOnly)
     float AutoRunAcceptanceRadius = 50.f;
@@ -151,3 +148,4 @@ private:
     // Handle player input for AFK system
     void HandlePlayerInput();
 };
+

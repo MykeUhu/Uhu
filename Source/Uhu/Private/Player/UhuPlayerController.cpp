@@ -122,11 +122,6 @@ void AUhuPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
     {
         return;
     }
-    if (InputTag.MatchesTagExact(FUhuGameplayTags::Get().InputTag_LMB))
-    {
-        bTargeting = ThisActor ? true : false;
-        bAutoRunning = false;
-    }
     if (GetASC()) GetASC()->AbilityInputTagPressed(InputTag);
 }
 
@@ -136,40 +131,7 @@ void AUhuPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
     {
         return;
     }
-    if (!InputTag.MatchesTagExact(FUhuGameplayTags::Get().InputTag_LMB))
-    {
-        if (GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
-        return;
-    }
-
     if (GetASC()) GetASC()->AbilityInputTagReleased(InputTag);
-    
-    if (!bTargeting && !bShiftKeyDown)
-    {
-        const APawn* ControlledPawn = GetPawn();
-        if (FollowTime <= ShortPressThreshold && ControlledPawn)
-        {
-            if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
-            {
-                Spline->ClearSplinePoints();
-                for (const FVector& PointLoc : NavPath->PathPoints)
-                {
-                    Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
-                }
-                if (NavPath->PathPoints.Num() > 0)
-                {
-                    CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
-                    bAutoRunning = true;
-                }
-            }
-            if (GetASC() && !GetASC()->HasMatchingGameplayTag(FUhuGameplayTags::Get().Player_Block_InputPressed))
-            {
-                UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
-            }
-        }
-        FollowTime = 0.f;
-        bTargeting = false;
-    }
 }
 
 void AUhuPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
@@ -178,27 +140,7 @@ void AUhuPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
     {
         return;
     }
-    if (!InputTag.MatchesTagExact(FUhuGameplayTags::Get().InputTag_LMB))
-    {
-        if (GetASC()) GetASC()->AbilityInputTagHeld(InputTag);
-        return;
-    }
-
-    if (bTargeting || bShiftKeyDown)
-    {
-        if (GetASC()) GetASC()->AbilityInputTagHeld(InputTag);
-    }
-    else
-    {
-        FollowTime += GetWorld()->GetDeltaSeconds();
-        if (CursorHit.bBlockingHit) CachedDestination = CursorHit.ImpactPoint;
-
-        if (APawn* ControlledPawn = GetPawn())
-        {
-            const FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
-            ControlledPawn->AddMovementInput(WorldDirection);
-        }
-    }
+    if (GetASC()) GetASC()->AbilityInputTagHeld(InputTag);
 }
 
 UUhuAbilitySystemComponent* AUhuPlayerController::GetASC()
@@ -215,14 +157,12 @@ void AUhuPlayerController::BeginPlay()
     Super::BeginPlay();
     check(UhuContext);
 
-    // Set up the Enhanced Input system
     UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
     if (Subsystem)
     {
         Subsystem->AddMappingContext(UhuContext, 0);
     }
 
-    // Start the AFK check timer
     GetWorld()->GetTimerManager().SetTimer(AFKTimer, this, &AUhuPlayerController::CheckForAFK, 1.0f, true);
 }
 
@@ -230,17 +170,48 @@ void AUhuPlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
 
-    // Cast to our custom input component
     UUhuInputComponent* UhuInputComponent = CastChecked<UUhuInputComponent>(InputComponent);
 
-    // Bind actions to functions
     UhuInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AUhuPlayerController::Move);
     UhuInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AUhuPlayerController::Look);
     UhuInputComponent->BindAction(ShiftAction, ETriggerEvent::Started, this, &AUhuPlayerController::ShiftPressed);
     UhuInputComponent->BindAction(ShiftAction, ETriggerEvent::Completed, this, &AUhuPlayerController::ShiftReleased);
 
-    // Bind ability actions
     UhuInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
+}
+
+void AUhuPlayerController::ShiftPressed()
+{
+    if (AUhuCharacter* UhuCharacter = Cast<AUhuCharacter>(GetPawn()))
+    {
+        UhuCharacter->SetSprinting(true);
+    }
+}
+
+void AUhuPlayerController::ShiftReleased()
+{
+    if (AUhuCharacter* UhuCharacter = Cast<AUhuCharacter>(GetPawn()))
+    {
+        UhuCharacter->SetSprinting(false);
+    }
+}
+
+void AUhuPlayerController::Move(const FInputActionValue& InputActionValue)
+{
+    ResetAFKTimer();
+
+    const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
+    const FRotator Rotation = GetControlRotation();
+    const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
+
+    const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+    const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+    if (APawn* ControlledPawn = GetPawn<APawn>())
+    {
+        ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
+        ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
+    }
 }
 
 void AUhuPlayerController::Look(const FInputActionValue& LookActionValue)
@@ -249,37 +220,15 @@ void AUhuPlayerController::Look(const FInputActionValue& LookActionValue)
     {
         const FVector2D LookAxisVector = LookActionValue.Get<FVector2D>();
         
-        // Apply yaw rotation
         ControlledPawn->AddControllerYawInput(LookAxisVector.X);
-
-        // Apply pitch rotation (with optional inversion)
         float PitchInput = bInvertYAxis ? LookAxisVector.Y : -LookAxisVector.Y;
         ControlledPawn->AddControllerPitchInput(PitchInput);
 
-        // Limit pitch angle
-        PlayerCameraManager->ViewPitchMin = -70.0f;
-        PlayerCameraManager->ViewPitchMax = 0.f;
-    }
-}
-
-void AUhuPlayerController::Move(const FInputActionValue& InputActionValue)
-{
-    // Reset AFK timer on movement
-    ResetAFKTimer();
-
-    const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
-    const FRotator Rotation = GetControlRotation();
-    const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
-
-    // Get forward and right vectors
-    const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-    const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-    if (APawn* ControlledPawn = GetPawn<APawn>())
-    {
-        // Apply movement
-        ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
-        ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
+        if (PlayerCameraManager)
+        {
+            PlayerCameraManager->ViewPitchMin = -70.0f;
+            PlayerCameraManager->ViewPitchMax = 0.f;
+        }
     }
 }
 
@@ -335,13 +284,12 @@ void AUhuPlayerController::ExitAFKMode()
 
 void AUhuPlayerController::HandlePlayerInput()
 {
-    // Check for any input that should reset the AFK timer
     if (IsInputKeyDown(EKeys::AnyKey) || GetInputAnalogKeyState(EKeys::MouseX) != 0.f || GetInputAnalogKeyState(EKeys::MouseY) != 0.f)
     {
-        // Exclude F12 key
         if (!IsInputKeyDown(EKeys::F12))
         {
             ResetAFKTimer();
         }
     }
 }
+

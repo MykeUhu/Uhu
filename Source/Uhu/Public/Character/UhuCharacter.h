@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActiveGameplayEffectHandle.h"
 #include "Character/UhuCharacterBase.h"
 #include "Interaction/PlayerInterface.h"
 #include "UhuCharacter.generated.h"
@@ -11,6 +12,7 @@ class UNiagaraComponent;
 class UCameraComponent;
 class USpringArmComponent;
 class UCineCameraComponent;
+class UGameplayEffect;
 
 /**
  * AUhuCharacter represents the player character in the game.
@@ -61,6 +63,12 @@ public:
     UFUNCTION()
     void HandleAFKStatusChange(bool bIsAFK);
 
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    void SetSprinting(bool bNewSprinting);
+
+    UPROPERTY(EditDefaultsOnly, Category = "Movement")
+    float SprintSpeedMultiplier = 1.5f;
+
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
     TObjectPtr<UCameraComponent> FollowCameraComponent;
@@ -68,11 +76,20 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
     TObjectPtr<USpringArmComponent> CameraBoom;
 
-
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
+    TSubclassOf<UGameplayEffect> SprintEffect;
 
 private:
+    bool bIsSprinting = false;
+    float BaseWalkSpeed = 600.f;
+    
     virtual void InitAbilityActorInfo() override;
 
     UFUNCTION(NetMulticast, Reliable)
     void MulticastLevelUpParticles() const;
+
+    void ApplySprintEffect();
+    void RemoveSprintEffect();
+
+    FActiveGameplayEffectHandle SprintEffectHandle;
 };

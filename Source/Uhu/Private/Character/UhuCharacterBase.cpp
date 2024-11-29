@@ -8,8 +8,8 @@
 #include "AbilitySystem/Passive/PassiveNiagaraComponent.h"
 #include "Uhu/Uhu.h"
 #include "Components/CapsuleComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 AUhuCharacterBase::AUhuCharacterBase()
