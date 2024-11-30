@@ -36,14 +36,12 @@ public:
 
 	FGameplayTag InputTag_LMB;
 	FGameplayTag InputTag_RMB;
-	FGameplayTag InputTag_Shift;
 	FGameplayTag InputTag_1;
 	FGameplayTag InputTag_2;
 	FGameplayTag InputTag_3;
 	FGameplayTag InputTag_4;
 	FGameplayTag InputTag_Passive_1;
 	FGameplayTag InputTag_Passive_2;
-	
 
 	FGameplayTag Damage;
 	FGameplayTag Damage_Fire;
@@ -120,51 +118,54 @@ public:
 	* Uhu Attributes
 	*/
 	// Vital Attributes
-	FGameplayTag Attributes_Vital_Health; // Gesundheit: Die aktuelle Menge an Gesundheitspunkten.
-	FGameplayTag Attributes_Vital_Hunger; // Hunger: Die aktuelle Menge an Hungerpunkten.
-	FGameplayTag Attributes_Vital_Thirst; // Durst: Die aktuelle Menge an Durstpunkten.
-	FGameplayTag Attributes_Vital_Stamina; // Ausdauer: Die aktuelle Menge an Ausdauerpunkten.
-	FGameplayTag Attributes_Vital_Temperature; // Temperatur: Die aktuelle Körpertemperatur des Charakters.
-
+	FGameplayTag Attributes_Vital_Health;
+	FGameplayTag Attributes_Vital_Hunger;
+	FGameplayTag Attributes_Vital_Thirst;
+	FGameplayTag Attributes_Vital_Stamina;
+	FGameplayTag Attributes_Vital_Temperature;
 
 	// Primary Attributes
-	FGameplayTag Attributes_Primary_Endurance; // Ausdauer: Beeinflusst die maximale Gesundheit und Ausdauer.
-	FGameplayTag Attributes_Primary_Strength; // Stärke: Beeinflusst die körperliche Kraft und Tragfähigkeit.
-	FGameplayTag Attributes_Primary_Agility; // Geschicklichkeit: Beeinflusst die Beweglichkeit und Geschwindigkeit.
-	FGameplayTag Attributes_Primary_Cleverness; // Intelligenz: Beeinflusst die Wahrnehmung und Kommunikationsfähigkeiten.
-	FGameplayTag Attributes_Primary_Cleanliness; // Sauberkeit: Beeinflusst die Gesundheitsregeneration und Widerstandsfähigkeit gegen Krankheiten.
-
+	FGameplayTag Attributes_Primary_Endurance;
+	FGameplayTag Attributes_Primary_Strength;
+	FGameplayTag Attributes_Primary_Agility;
+	FGameplayTag Attributes_Primary_Cleverness;
+	FGameplayTag Attributes_Primary_Cleanliness;
+	
 	// Secondary Attributes
-	FGameplayTag Attributes_Secondary_MaxHealth; // Maximale Gesundheit: Die maximale Menge an Gesundheitspunkten.
-	FGameplayTag Attributes_Secondary_MaxHunger; // Maximaler Hunger: Die maximale Menge an Hungerpunkten.
-	FGameplayTag Attributes_Secondary_MaxThirst; // Maximaler Durst: Die maximale Menge an Durstpunkten.
-	FGameplayTag Attributes_Secondary_MaxStamina; // Maximale Ausdauer: Die maximale Menge an Ausdauerpunkten.
-	FGameplayTag Attributes_Secondary_Perception; // Wahrnehmung: Beeinflusst die Fähigkeit, Umgebungsdetails zu erkennen.
-	FGameplayTag Attributes_Secondary_Communication; // Kommunikation: Beeinflusst die Fähigkeit, mit anderen zu interagieren.
+	FGameplayTag Attributes_Secondary_MaxHealth;
+	FGameplayTag Attributes_Secondary_MaxHunger;
+	FGameplayTag Attributes_Secondary_MaxThirst;
+	FGameplayTag Attributes_Secondary_MaxStamina;
+	FGameplayTag Attributes_Secondary_Perception;
+	FGameplayTag Attributes_Secondary_Communication;
 
 	// Uhu Resistance
-	FGameplayTag Attributes_Secondary_FoodPoisonResistance; // Lebensmittelvergiftungsresistenz: Widerstandsfähigkeit gegen Lebensmittelvergiftungen.
-	FGameplayTag Attributes_Secondary_TemperatureResistance; // Temperaturresistenz: Widerstandsfähigkeit gegen extreme Temperaturen.
+	FGameplayTag Attributes_Secondary_FoodPoisonResistance;
+	FGameplayTag Attributes_Secondary_TemperatureResistance;
 
 	// Uhu Buff
-	FGameplayTag Attributes_Secondary_HealthRegeneration; // Gesundheitsregeneration: Die Rate, mit der Gesundheitspunkte regeneriert werden.
-	FGameplayTag Attributes_Secondary_HungerRegeneration; // Hungerregeneration: Die Rate, mit der Hungerpunkte regeneriert werden.
-	FGameplayTag Attributes_Secondary_ThirstRegeneration; // Durstregeneration: Die Rate, mit der Durstpunkte regeneriert werden.
-	FGameplayTag Attributes_Secondary_StaminaRegeneration; // Ausdauerregeneration: Die Rate, mit der Ausdauerpunkte regeneriert werden.
+	FGameplayTag Attributes_Secondary_HealthRegeneration;
+	FGameplayTag Attributes_Secondary_HungerRegeneration;
+	FGameplayTag Attributes_Secondary_ThirstRegeneration;
+	FGameplayTag Attributes_Secondary_StaminaRegeneration;
 
 	// Uhu Debuff
-	FGameplayTag Attributes_Secondary_HealthDegeneration; // Gesundheitsdegeneration: Die Rate, mit der Gesundheitspunkte verloren gehen.
-	FGameplayTag Attributes_Secondary_HungerDegeneration; // Hungerdegeneration: Die Rate, mit der Hungerpunkte verloren gehen.
-	FGameplayTag Attributes_Secondary_ThirstDegeneration; // Durstdegeneration: Die Rate, mit der Durstpunkte verloren gehen.
-	FGameplayTag Attributes_Secondary_StaminaDegeneration; // Ausdauerdegeneration: Die Rate, mit der Ausdauerpunkte verloren gehen.
+	FGameplayTag Attributes_Secondary_HealthDegeneration;
+	FGameplayTag Attributes_Secondary_HungerDegeneration;
+	FGameplayTag Attributes_Secondary_ThirstDegeneration;
+	FGameplayTag Attributes_Secondary_StaminaDegeneration;
+
+	// --
+
+	
+
 
 	// Debuff
-	FGameplayTag Debuff_Starvation; // Verhungern: Zustand, in dem der Charakter aufgrund von Nahrungsmangel leidet.
-	FGameplayTag Debuff_Dehydration; // Dehydrierung: Zustand, in dem der Charakter aufgrund von Wassermangel leidet.
-	FGameplayTag Debuff_Hypothermia; // Unterkühlung: Zustand, in dem der Charakter aufgrund von Kälte leidet.
-	FGameplayTag Debuff_Heatstroke; // Hitzschlag: Zustand, in dem der Charakter aufgrund von Hitze leidet.
-	FGameplayTag Debuff_FoodPoisoning; // Lebensmittelvergiftung: Zustand, in dem der Charakter aufgrund von verdorbenem Essen leidet.
-
+	FGameplayTag Debuff_Starvation;
+	FGameplayTag Debuff_Dehydration;
+	FGameplayTag Debuff_Hypothermia;
+	FGameplayTag Debuff_Heatstroke;
+	FGameplayTag Debuff_FoodPoisoning;
 
 
 	// Damage

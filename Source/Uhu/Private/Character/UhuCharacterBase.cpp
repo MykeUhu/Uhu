@@ -8,8 +8,8 @@
 #include "AbilitySystem/Passive/PassiveNiagaraComponent.h"
 #include "Uhu/Uhu.h"
 #include "Components/CapsuleComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
 
 AUhuCharacterBase::AUhuCharacterBase()
@@ -45,6 +45,43 @@ AUhuCharacterBase::AUhuCharacterBase()
 	ManaSiphonNiagaraComponent->SetupAttachment(EffectAttachComponent);
 
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+	
+	BaseWalkSpeed = 200.0f; // Initiale Basisgeschwindigkeit
+	CurrentSpeed = BaseWalkSpeed;
+}
+
+void AUhuCharacterBase::SetCurrentSpeed(float Speed)
+{
+	CurrentSpeed = Speed; GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
+}
+
+float AUhuCharacterBase::GetCurrentSpeed() const
+{
+	return CurrentSpeed;
+}
+
+void AUhuCharacterBase::ApplyStaminaEffect(float Speed)
+{
+	int32 StaminaStacks = 0;
+	if (Speed > 600.0f)
+	{
+		StaminaStacks = (Speed - 600.0f) / 100.0f;
+	}
+	// Überprüfe, ob der Charakter sich bewegt
+	if (GetCharacterMovement()->Velocity.Size() > 0)
+	{
+		// Erstelle einen Gameplay-Effekt, der die Stamina reduziert
+		FGameplayEffectSpecHandle StaminaEffectSpecHandle = AbilitySystemComponent->MakeOutgoingSpec(StaminaReductionEffect, 1.0f, AbilitySystemComponent->MakeEffectContext());
+		if (StaminaEffectSpecHandle.IsValid())
+		{
+			StaminaEffectSpecHandle.Data->SetStackCount(StaminaStacks);
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*StaminaEffectSpecHandle.Data.Get());
+		}
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Stamina effect applied with stacks: %d"), StaminaStacks));
+		}
+	}
 }
 
 void AUhuCharacterBase::Tick(float DeltaTime)
@@ -115,8 +152,7 @@ void AUhuCharacterBase::MulticastHandleDeath_Implementation(const FVector& Death
 
 void AUhuCharacterBase::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
-	bIsStunned = NewCount > 0;
-	GetCharacterMovement()->MaxWalkSpeed = bIsStunned ? 0.f : BaseWalkSpeed;
+	bIsStunned = NewCount > 0; SetCurrentSpeed(bIsStunned ? 0.f : BaseWalkSpeed);
 }
 
 void AUhuCharacterBase::OnRep_Stunned()
@@ -126,6 +162,12 @@ void AUhuCharacterBase::OnRep_Stunned()
 
 void AUhuCharacterBase::OnRep_Burned()
 {
+}
+
+void AUhuCharacterBase::BeginPlay()
+{
+	Super::BeginPlay();
+	
 }
 
 FVector AUhuCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
@@ -267,6 +309,3 @@ void AUhuCharacterBase::Dissolve()
 		StartWeaponDissolveTimeline(DynamicMatInst);
 	}
 }
-
-
-

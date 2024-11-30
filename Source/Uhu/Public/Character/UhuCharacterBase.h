@@ -76,8 +76,19 @@ public:
 
 	UFUNCTION()
 	virtual void OnRep_Burned();
+
+	void SetCurrentSpeed(float Speed);
+	float GetCurrentSpeed() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Stamina")
+	void ApplyStaminaEffect(float Speed);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stamina")
+	TSubclassOf<UGameplayEffect> StaminaReductionEffect;
 	
 protected:
+	virtual void BeginPlay() override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
@@ -95,10 +106,12 @@ protected:
 
 	bool bDead = false;
 
+	float CurrentSpeed;
+
 	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
-	float BaseWalkSpeed = 600.f;
+	float BaseWalkSpeed;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
@@ -158,6 +171,7 @@ protected:
 	TObjectPtr<UDebuffNiagaraComponent> StunDebuffComponent;
 	
 private:
+
 	UPROPERTY(EditAnywhere, Category = "Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 

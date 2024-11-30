@@ -375,18 +375,7 @@ void UUhuAttributeSet::SendXPEvent(const FEffectProperties& Props)
 
 void UUhuAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage, bool bBlockedHit, bool bCriticalHit) const
 {
-	if (Props.SourceCharacter != Props.TargetCharacter)
-	{
-		if(AUhuPlayerController* PC = Cast<AUhuPlayerController>(Props.SourceCharacter->Controller))
-		{
-			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
-			return;
-		}
-		if(AUhuPlayerController* PC = Cast<AUhuPlayerController>(Props.TargetCharacter->Controller))
-		{
-			PC->ShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHit, bCriticalHit);
-		}
-	}
+	//
 }
 
 /*
