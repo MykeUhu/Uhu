@@ -4,6 +4,8 @@
 #include "AbilitySystemComponent.h"
 #include "UhuGameplayTags.h"
 #include "AbilitySystem/UhuAbilitySystemComponent.h"
+#include "AbilitySystem/UhuAttributeSet.h"
+#include "AbilitySystem/Data/AttributeInfo.h"
 #include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "AbilitySystem/Passive/PassiveNiagaraComponent.h"
 #include "Uhu/Uhu.h"
@@ -63,11 +65,13 @@ float AUhuCharacterBase::GetCurrentSpeed() const
 void AUhuCharacterBase::ApplyStaminaEffect(float Speed)
 {
 	int32 StaminaStacks = 0;
+
 	if (Speed > 600.0f)
 	{
 		StaminaStacks = (Speed - 600.0f) / 100.0f;
 	}
-	// Überprüfe, ob der Charakter sich bewegt
+
+	// Überprüfe, ob der Charakter sich bewegt und Stamina vorhanden ist
 	if (GetCharacterMovement()->Velocity.Size() > 0)
 	{
 		// Erstelle einen Gameplay-Effekt, der die Stamina reduziert
@@ -77,12 +81,14 @@ void AUhuCharacterBase::ApplyStaminaEffect(float Speed)
 			StaminaEffectSpecHandle.Data->SetStackCount(StaminaStacks);
 			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*StaminaEffectSpecHandle.Data.Get());
 		}
+
 		if (GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Stamina effect applied with stacks: %d"), StaminaStacks));
 		}
 	}
 }
+
 
 void AUhuCharacterBase::Tick(float DeltaTime)
 {

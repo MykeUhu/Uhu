@@ -10,6 +10,11 @@
 
 ---
 
+### OverlayWidgetController   
+nur Health und Mana drinenn   
+UhuAttributset auch nur health und mana clamp
+--- 
+
 #### **Legende**
 ✅ **_Erledigt_**  
 ❌ **_Fehlt_**  

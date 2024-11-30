@@ -8,7 +8,6 @@
 #include "Character/UhuCharacter.h"
 #include "Character/UhuCharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Uhu/Uhu.h"
 #include "Input/UhuInputComponent.h"
 
 AUhuPlayerController::AUhuPlayerController()
@@ -94,13 +93,8 @@ void AUhuPlayerController::Speed(const FInputActionValue& InputActionValue)
     if (AUhuCharacter* UhuCharacter = Cast<AUhuCharacter>(GetCharacter()))
     {
         float NewSpeed = FMath::Clamp(UhuCharacter->GetCharacterMovement()->MaxWalkSpeed + ScrollValue * 100.0f, MinSpeed, MaxSpeed);
-        UhuCharacter->GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
 
-        // Wende den Stamina-Effekt an, wenn die Geschwindigkeit über 600 liegt
-        if (NewSpeed > 600.0f)
-        {
-            UhuCharacter->ApplyStaminaEffect(NewSpeed);
-        }
+        UhuCharacter->GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
 
         if (GEngine)
         {

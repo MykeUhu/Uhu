@@ -16,6 +16,12 @@ void UOverlayWidgetController::BroadcastInitialValues()
 	OnMaxHealthChanged.Broadcast(GetUhuAS()->GetMaxHealth());
 	OnManaChanged.Broadcast(GetUhuAS()->GetMana());
 	OnMaxManaChanged.Broadcast(GetUhuAS()->GetMaxMana());
+	OnThirstChanged.Broadcast(GetUhuAS()->GetThirst());
+	OnMaxThirstChanged.Broadcast(GetUhuAS()->GetMaxThirst());
+	OnHungerChanged.Broadcast(GetUhuAS()->GetHunger());
+	OnMaxHungerChanged.Broadcast(GetUhuAS()->GetMaxHunger());
+	OnStaminaChanged.Broadcast(GetUhuAS()->GetStamina());
+	OnMaxThirstChanged.Broadcast(GetUhuAS()->GetMaxThirst());
 	
 }
 
@@ -56,6 +62,48 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 				OnMaxManaChanged.Broadcast(Data.NewValue);
 			}
 		);
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetUhuAS()->GetThirstAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnThirstChanged.Broadcast(Data.NewValue);
+			}
+		);
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetUhuAS()->GetMaxThirstAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxThirstChanged.Broadcast(Data.NewValue);
+			}
+		);
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetUhuAS()->GetHungerAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnHungerChanged.Broadcast(Data.NewValue);
+			}
+		);
+		
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetUhuAS()->GetMaxHungerAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnMaxHungerChanged.Broadcast(Data.NewValue);
+		}
+	);
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetUhuAS()->GetStaminaAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnStaminaChanged.Broadcast(Data.NewValue);
+			}
+		);
+	
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetUhuAS()->GetMaxStaminaAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxStaminaChanged.Broadcast(Data.NewValue);
+			}
+			);
 
 	if (GetUhuASC())
 	{

@@ -9,6 +9,7 @@
 #include "Interaction/CombatInterface.h"
 #include "UhuCharacterBase.generated.h"
 
+struct FGameplayAttribute;
 class UPassiveNiagaraComponent;
 class UDebuffNiagaraComponent;
 class UNiagaraSystem;
@@ -79,7 +80,7 @@ public:
 
 	void SetCurrentSpeed(float Speed);
 	float GetCurrentSpeed() const;
-
+	
 	UFUNCTION(BlueprintCallable, Category = "Stamina")
 	void ApplyStaminaEffect(float Speed);
 
