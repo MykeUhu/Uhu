@@ -155,6 +155,21 @@ public:
 	FGameplayTag Attributes_Secondary_ThirstDegeneration;
 	FGameplayTag Attributes_Secondary_StaminaDegeneration;
 
+	// Uhu Movement
+	FGameplayTag Movement_Speed_0;	// Speed 0
+	FGameplayTag Movement_Speed_1;	// Speed 100
+	FGameplayTag Movement_Speed_2;	// Speed 200
+	FGameplayTag Movement_Speed_3;	// Speed 300
+	FGameplayTag Movement_Speed_4;	// Speed 400
+	FGameplayTag Movement_Speed_5;	// Speed 500
+	FGameplayTag Movement_Speed_6;	// Speed 600
+	FGameplayTag Movement_Speed_7;	// Speed 700
+	FGameplayTag Movement_Speed_8;	// Speed 800
+	FGameplayTag Movement_Speed_9;	// Speed 900
+	FGameplayTag Movement_Speed_10;	// Speed 1000
+
+	FGameplayTag Data_Stamina;
+	
 	// --
 
 	

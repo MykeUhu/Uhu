@@ -32,6 +32,7 @@ void FUhuGameplayTags::InitializeNativeGameplayTags()
         FString("Stamina Vital Attribute")
 		);
 	
+	
     GameplayTags.Attributes_Vital_Temperature = UGameplayTagsManager::Get().AddNativeGameplayTag(
         FName("Attributes.Vital.Temperature"),
         FString("Temperature Vital Attribute")
@@ -140,24 +141,85 @@ void FUhuGameplayTags::InitializeNativeGameplayTags()
 	
 	// Uhu Debuff
 	GameplayTags.Attributes_Secondary_HealthDegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Debuff.StaminaRegeneration"),
+		FName("Debuff.HealthDegeneration"),
 		FString("Stamina Degeneration Debuff")
 		);
 	
 		GameplayTags.Attributes_Secondary_HungerDegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(
-    	FName("Debuff.StaminaRegeneration"),
+    	FName("Debuff.HungerDegeneration"),
     	FString("Stamina Degeneration Debuff")
     	);
 
 	GameplayTags.Attributes_Secondary_ThirstDegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Debuff.StaminaRegeneration"),
+		FName("Debuff.ThirstDegeneration"),
 		FString("Stamina Degeneration Debuff")
 		);
 	
 	GameplayTags.Attributes_Secondary_StaminaDegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Debuff.StaminaRegeneration"),
+		FName("Debuff.StaminaDegeneration"),
 		FString("Stamina Degeneration Debuff")
 		);
+
+	// Uhu Movement
+	GameplayTags.Movement_Speed_0 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Movement.Speed.0"),
+			FString("Speed 0 - Don't Move")
+		);
+
+		GameplayTags.Movement_Speed_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Movement.Speed.1"),
+			FString("Speed 100 - Walking")
+		);
+
+		GameplayTags.Movement_Speed_2 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Movement.Speed.2"),
+			FString("Speed 200 - Jogging")
+		);
+
+		GameplayTags.Movement_Speed_3 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Movement.Speed.3"),
+			FString("Speed 300 - Running")
+		);
+
+		GameplayTags.Movement_Speed_4 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Movement.Speed.4"),
+			FString("Speed 400 - Sprinting")
+		);
+
+		GameplayTags.Movement_Speed_5 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Movement.Speed.5"),
+			FString("Speed 500 - Fast Sprinting")
+		);
+
+		GameplayTags.Movement_Speed_6 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Movement.Speed.6"),
+			FString("Speed 600 - Very Fast Sprinting")
+		);
+
+		GameplayTags.Movement_Speed_7 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Movement.Speed.7"),
+			FString("Speed 700 - Super Sprinting")
+		);
+
+		GameplayTags.Movement_Speed_8 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Movement.Speed.8"),
+			FString("Speed 800 - Ultra Sprinting")
+		);
+
+		GameplayTags.Movement_Speed_9 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Movement.Speed.9"),
+			FString("Speed 900 - Hyper Sprinting")
+		);
+
+		GameplayTags.Movement_Speed_10 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+			FName("Movement.Speed.10"),
+			FString("Speed 1000 - Maximum Speed")
+		);
+
+		GameplayTags.Data_Stamina = UGameplayTagsManager::Get().AddNativeGameplayTag(
+				FName("Data.Stamina"),
+				FString("Regen Degen Data for Movement")
+			);
 
 	// --
 

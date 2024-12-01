@@ -21,6 +21,7 @@ public:
 	AUhuCharacter();
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
+	virtual void BeginPlay() override;
 
 	/** Player Interface */
 	virtual void AddToXP_Implementation(int32 InXP) override;
@@ -45,6 +46,7 @@ public:
 
 	virtual void OnRep_Stunned() override;
 	virtual void OnRep_Burned() override;
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UCameraComponent> FollowCameraComponent;

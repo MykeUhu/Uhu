@@ -11,6 +11,7 @@
 #include "Player/UhuPlayerController.h"
 #include "Player/UhuPlayerState.h"
 #include "NiagaraComponent.h"
+#include "AbilitySystem/Abilities/Movement/MovementSpeedAbility.h"
 #include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -41,6 +42,10 @@ AUhuCharacter::AUhuCharacter()
 	bUseControllerRotationYaw = false;
 
 	CharacterClass = ECharacterClass::Elementalist;
+
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+
+	
 }
 
 void AUhuCharacter::PossessedBy(AController* NewController)
@@ -58,6 +63,16 @@ void AUhuCharacter::OnRep_PlayerState()
 
 	// Init ability actor info for the Client
 	InitAbilityActorInfo();
+}
+
+void AUhuCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->GiveAbility(
+			FGameplayAbilitySpec(UMovementSpeedAbility::StaticClass(), 1, INDEX_NONE, this));
+	}
 }
 
 void AUhuCharacter::AddToXP_Implementation(int32 InXP)

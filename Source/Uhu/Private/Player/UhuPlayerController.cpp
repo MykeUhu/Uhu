@@ -6,8 +6,6 @@
 #include "EnhancedInputSubsystems.h"
 #include "AbilitySystem/UhuAbilitySystemComponent.h"
 #include "Character/UhuCharacter.h"
-#include "Character/UhuCharacterBase.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Input/UhuInputComponent.h"
 
 AUhuPlayerController::AUhuPlayerController()
@@ -18,7 +16,6 @@ AUhuPlayerController::AUhuPlayerController()
 void AUhuPlayerController::PlayerTick(float DeltaTime)
 {
     Super::PlayerTick(DeltaTime);
-    // Hier können zukünftige Logiken für Tick hinzugefügt werden
 }
 
 UUhuAbilitySystemComponent* AUhuPlayerController::GetASC()
@@ -41,7 +38,7 @@ void AUhuPlayerController::BeginPlay()
         Subsystem->AddMappingContext(UhuContext, 0);
     }
 
-    bShowMouseCursor = false; // Mauszeiger wird nicht benötigt
+    bShowMouseCursor = false;
     SetInputMode(FInputModeGameOnly());
 }
 
@@ -52,10 +49,8 @@ void AUhuPlayerController::SetupInputComponent()
     UUhuInputComponent* UhuInputComponent = CastChecked<UUhuInputComponent>(InputComponent);
     UhuInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AUhuPlayerController::Move);
     UhuInputComponent->BindAction(SpeedAction, ETriggerEvent::Triggered, this, &AUhuPlayerController::Speed);
-    UhuInputComponent->BindAction(ResetSpeedAction, ETriggerEvent::Started, this, &AUhuPlayerController::ResetSpeed);
     UhuInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }
-
 
 void AUhuPlayerController::Move(const FInputActionValue& InputActionValue)
 {
@@ -75,47 +70,43 @@ void AUhuPlayerController::Move(const FInputActionValue& InputActionValue)
 
 void AUhuPlayerController::Speed(const FInputActionValue& InputActionValue)
 {
-    if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Speed method triggered"));
-    }
-
     const float ScrollValue = InputActionValue.Get<float>();
+    UE_LOG(LogTemp, Log, TEXT("Scroll Value: %f"), ScrollValue);
 
-    if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("Scroll Value: %f"), ScrollValue));
-    }
-
-    const float MinSpeed = 200.0f;
-    const float MaxSpeed = 1200.0f;
+    // Adjust the speed level based on scroll direction
+    CurrentSpeedLevel = FMath::Clamp(CurrentSpeedLevel + (ScrollValue > 0 ? 1 : -1), 0, MaxSpeedLevel);
+    UE_LOG(LogTemp, Log, TEXT("New Speed Level: %d"), CurrentSpeedLevel);
 
     if (AUhuCharacter* UhuCharacter = Cast<AUhuCharacter>(GetCharacter()))
     {
-        float NewSpeed = FMath::Clamp(UhuCharacter->GetCharacterMovement()->MaxWalkSpeed + ScrollValue * 100.0f, MinSpeed, MaxSpeed);
-
-        UhuCharacter->GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
-
-        if (GEngine)
+        UAbilitySystemComponent* ASC = UhuCharacter->GetAbilitySystemComponent();
+        if (ASC)
         {
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("New Speed: %f"), NewSpeed));
+            // Find the ability spec for the movement speed ability
+            FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromClass(MovementSpeedAbility);
+            if (AbilitySpec)
+            {
+                // Update the ability level
+                AbilitySpec->Level = CurrentSpeedLevel;
+                ASC->MarkAbilitySpecDirty(*AbilitySpec);
+
+                // Activate or update the ability
+                if (ASC->TryActivateAbility(AbilitySpec->Handle))
+                {
+                    UE_LOG(LogTemp, Log, TEXT("Movement Speed ability activated at level: %d"), CurrentSpeedLevel);
+                }
+                else
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("Failed to activate Movement Speed ability at level: %d"), CurrentSpeedLevel);
+                }
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Movement Speed ability spec not found!"));
+            }
         }
     }
 }
-
-
-void AUhuPlayerController::ResetSpeed(const FInputActionValue& InputActionValue)
-{
-    if (AUhuCharacter* UhuCharacter = Cast<AUhuCharacter>(GetCharacter()))
-    {
-        UhuCharacter->GetCharacterMovement()->MaxWalkSpeed = 400.0f;
-        if (GEngine)
-            {
-            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Speed reset to 600"));
-            }
-    }
-}
-
 
 void AUhuPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {

@@ -12,6 +12,7 @@ class UInputAction;
 struct FInputActionValue;
 class UUhuInputConfig;
 class UUhuAbilitySystemComponent;
+class UGameplayAbility;
 
 UCLASS()
 class UHU_API AUhuPlayerController : public APlayerController
@@ -26,23 +27,25 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	TSubclassOf<UGameplayAbility> MovementSpeedAbility;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	int32 MaxSpeedLevel = 10;
+
 private:
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputMappingContext> UhuContext;
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> MoveAction;
-	
+    
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> SpeedAction;
 
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> ResetSpeedAction;
-	
 	void Move(const FInputActionValue& InputActionValue);
 	void Speed(const FInputActionValue& InputActionValue);
-	void ResetSpeed(const FInputActionValue& InputActionValue);
-	
+
 	void AbilityInputTagPressed(FGameplayTag InputTag);
 	void AbilityInputTagReleased(FGameplayTag InputTag);
 	void AbilityInputTagHeld(FGameplayTag InputTag);
@@ -54,4 +57,6 @@ private:
 	TObjectPtr<UUhuAbilitySystemComponent> UhuAbilitySystemComponent;
 
 	UUhuAbilitySystemComponent* GetASC();
+
+	int32 CurrentSpeedLevel = 4; // Start at default walking speed
 };
